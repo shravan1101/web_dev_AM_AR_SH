@@ -16,20 +16,20 @@ console.log(a2);
 console.log("hi");
 
 
-let x ="shravan bhsie"
-let y = 22;
-let z =3.23;
-const p = true;
+let x ="shravan bhsie" //string
+let y = 22; // int
+let z =3.23;// float
+const p = true; // bool 
 
-let q= undefined;
-let r = null;
+let q= undefined; // undefined
+let r = null; // null ;
 
 console.log(x,y,z,p,q,r)
 console.log(typeof(x),typeof(y),typeof(z),typeof(p),typeof(q),typeof(r));
 // null is a object;
 
 console.log(null == undefined);
-console.log(null === undefined);
+console.log(null === undefined); //  
 
 let o = {
     "name" : "harry",
