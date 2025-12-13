@@ -1,4 +1,4 @@
 git n github done
 
-GANDU UPDATE THE REPO BY PRACTICE NOTES
-AT LEAT COPY AND PUSH 
+tuji gend cdc chad naka djvidifode
+
