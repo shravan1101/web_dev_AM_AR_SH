@@ -1,0 +1,31 @@
+
+        .fam {margin: auto;
+            height: 550px;
+            display: flex;
+            justify-content: center;
+            /* align-items: center; */
+            gap: 10px;
+        }
+
+        .family {
+            border: 5px solid black;
+            width: 10vw;
+            margin: auto;
+            padding: 15px;
+            border-radius: 25px;
+        }
+
+        .jite{
+            
+            margin: auto;
+            padding: 15px;
+            border-radius: 2px;
+        }
+
+        p{
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            background-color: aqua;
+        }
+        
+
+    
