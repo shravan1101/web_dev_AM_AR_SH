@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form action="post">
+      <label for="name">Name:</label>
+      <input
+        type="text"
+        placeholder="enter your name "
+        id="name"
+        name="user_name"
+      />
+
+      <label for="gender">Gender:</label>
+
+      <input type="radio" id="male" name="gender" value="male" />
+      <label for="male">Male</label>
+
+      <input type="radio" id="female" name="gender" value="female" />
+      <label for="female">Female</label>
+
+      <div>
+        <input type="checkbox" name="terms" id="terms" />
+        <label for="terms">I agree to the terms and conditions</label>
+      </div>
+
+      <div>
+        <textarea
+          name="text"
+          id="text"
+          rows="30px"
+          cols="200px"
+          placeholder="write herer  "
+        >
+        </textarea>
+
+        <div>
+          <select name="fruti" id="fruti">
+            <option value="apple">Apple</option>
+            <option value="banana">Banana</option>
+            <option value="grape">Grape</option>
+            <option value="orange">Orange</option>
+            <option value="mango">Mango</option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </body>
+</html>
