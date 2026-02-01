@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hamburger Menu - One File</title>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+      }
+
+      /* Header */
+      .header {
+        background: #222;
+        color: white;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+      }
+
+      /* Hamburger icon */
+      .hamburger {
+        font-size: 28px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      /* Menu */
+      .menu {
+        display: none;
+        background: #333;
+        width: 220px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding-top: 60px;
+      }
+
+      .menu a {
+        display: block;
+        padding: 15px;
+        color: white;
+        text-decoration: none;
+      }
+
+      .menu a:hover {
+        background: #444;
+      }
+
+      /* Active menu */
+      .menu.active {
+        display: block;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Header -->
+    <div class="header">
+      <div class="hamburger" id="hamburger">☰</div>
+      <h3 style="margin-left: 15px">My Website</h3>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <nav class="menu" id="menu">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Services</a>
+      <a href="#">Contact</a>
+    </nav>
+
+    <script>
+      const hamburger = document.getElementById("hamburger");
+      const menu = document.getElementById("menu");
+
+      hamburger.addEventListener("click", () => {
+        menu.classList.toggle("active");
+      });
+    </script>
+  </body>
+</html>
