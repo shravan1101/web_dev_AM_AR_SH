@@ -419,3 +419,10 @@ button {
   filter: invert(1);
   opacity: 0.9;
 }
+.seekbar {
+  height: 3px;
+  width: 100%;
+  border: 2px solid red;
+  position: sticky;
+  bottom: 0px;
+}
