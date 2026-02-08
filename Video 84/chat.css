@@ -1,0 +1,270 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap");
+
+/* =====================
+   ROOT VARIABLES
+===================== */
+:root {
+  --spotify-green: #1db954;
+  --spotify-black: #121212;
+  --spotify-dark: #181818;
+  --spotify-dark-hover: #242424;
+  --spotify-white: #ffffff;
+  --spotify-gray: #b3b3b3;
+}
+
+/* =====================
+   RESET & BASE
+===================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--spotify-black);
+  color: var(--spotify-white);
+  font-family: "Poppins", sans-serif;
+}
+
+/* =====================
+   LAYOUT
+===================== */
+.flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.item_center {
+  align-items: center;
+}
+
+.container {
+  overflow-y: auto;
+}
+
+/* =====================
+   LEFT SIDEBAR
+===================== */
+.left {
+  width: 25vw;
+  padding: 15px;
+}
+
+.home ul li {
+  display: flex;
+  gap: 15px;
+  list-style: none;
+  padding-top: 12px;
+  font-weight: 600;
+}
+
+.logo ul {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.logo ul li {
+  list-style: none;
+}
+
+.logo ul li img {
+  width: 20px;
+}
+
+.library {
+  min-height: 80vh;
+  position: relative;
+}
+
+/* =====================
+   FOOTER
+===================== */
+.footer {
+  display: flex;
+  gap: 12px;
+  font-size: 10px;
+  position: absolute;
+  bottom: 0;
+  flex-wrap: wrap;
+  padding: 20px 0;
+}
+
+.footer a {
+  color: var(--spotify-gray);
+  text-decoration: none;
+}
+
+.footer a:hover {
+  color: var(--spotify-white);
+}
+
+/* =====================
+   HEADER
+===================== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #101010;
+}
+
+.header * {
+  padding: 12px;
+}
+
+/* =====================
+   BUTTONS
+===================== */
+button {
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.06);
+}
+
+.loginbtn {
+  background: transparent;
+  color: var(--spotify-white);
+  border: 1px solid var(--spotify-gray);
+}
+
+.loginbtn:hover {
+  border-color: var(--spotify-white);
+}
+
+.signupbtn {
+  background: var(--spotify-green);
+  color: var(--spotify-black);
+}
+
+.signupbtn:hover {
+  background: #1ed760;
+}
+
+/* =====================
+   PLAYLIST SECTION
+===================== */
+.spotifyplaylist {
+  padding: 10px;
+}
+
+.cardcontainer {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  max-height: 80vh;
+  padding: 10px;
+}
+
+/* =====================
+   CARD
+===================== */
+.spotifyplaylist .card {
+  width: 190px;
+  padding: 14px;
+  border-radius: 8px;
+  background-color: var(--spotify-dark);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.spotifyplaylist .card:hover {
+  background-color: var(--spotify-dark-hover);
+  transform: translateY(-4px);
+}
+
+.card img {
+  width: 100%;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.card > * {
+  padding-top: 12px;
+}
+
+/* =====================
+   PLAY BUTTON
+===================== */
+.play {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  background-color: var(--spotify-green);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.3s ease;
+}
+
+.card:hover .play {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =====================
+   UTILITIES
+===================== */
+.bg-black {
+  background-color: black;
+}
+
+.bg-gray {
+  background-color: var(--spotify-black);
+}
+
+.rounded {
+  border-radius: 7px;
+}
+
+.m-1 {
+  margin: 5px;
+}
+
+.p-1 {
+  padding: 10px;
+}
+
+.invert {
+  filter: invert(1);
+}
+
+/* =====================
+   SCROLLBAR (SPOTIFY STYLE)
+===================== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #7a7a7a;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #9a9a9a;
+}

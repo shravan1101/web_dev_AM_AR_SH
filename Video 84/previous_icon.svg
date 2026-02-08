@@ -1,0 +1,19 @@
+<svg
+  width="120"
+  height="120"
+  viewBox="0 0 100 100"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-label="Play"
+>
+  <path
+    d="M38 26
+       L72 50
+       L38 74
+       Z"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="3"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+  />
+</svg>

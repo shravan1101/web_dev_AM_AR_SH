@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="script.js"></script>
+</body>
+</html>
+
+<!-- In **JavaScript**, both `let` and `var` are used to declare variables, but they behave very differently.
+
+---
+
+## 🔥 Main Difference
+
+| Feature        | `var`                            | `let`                     |
+| -------------- | -------------------------------- | ------------------------- |
+| Scope          | Function scope                   | Block scope               |
+| Re-declaration | Allowed                          | Not allowed               |
+| Hoisting       | Yes (initialized as `undefined`) | Yes (but not initialized) |
+| Best for       | Old JavaScript                   | Modern JavaScript         |
+
+---
+
+## 1️⃣ **Scope difference**
+
+### `var` → function scoped
+
+```js
+if (true) {
+  var x = 10;
+}
+console.log(x);   // 10  (works outside block)
+```
+
+### `let` → block scoped
+
+```js
+if (true) {
+  let x = 10;
+}
+console.log(x);   // Error (x is not defined outside block)
+```
+
+---
+
+## 2️⃣ **Re-declaration**
+
+### `var` allows re-declaring
+
+```js
+var a = 5;
+var a = 10;   // No error
+```
+
+### `let` does NOT allow re-declaring
+
+```js
+let a = 5;
+let a = 10;   // ❌ Error (duplicate declaration)
+```
+
+---
+
+## 3️⃣ **Hoisting**
+
+Both are hoisted but differently.
+
+```js
+console.log(a); // undefined
+var a = 10;
+```
+
+But with let:
+
+```js
+console.log(a); // ❌ Error
+let a = 10;
+```
+
+Because the variable exists but is not initialized yet (temporal dead zone).
+
+---
+
+## 📌 Example where `let` is safer
+
+```js
+for (var i = 0; i < 3; i++) {}
+console.log(i);  // 3 (var leaks outside loop)
+
+for (let j = 0; j < 3; j++) {}
+console.log(j);  // ❌ Error (j stays inside loop)
+```
+
+---
+
+## 🎯 Rule of Thumb
+
+| When to use                     | Keyword |
+| ------------------------------- | ------- |
+| Modern JavaScript               | `let`   |
+| Avoid bugs                      | `let`   |
+| Very old browsers / legacy code | `var`   |
+
+---
+
+### ⭐ Final summary
+
+| Keyword | Good or Bad                      |
+| ------- | -------------------------------- |
+| `var`   | 🚫 Not recommended (old + risky) |
+| `let`   | ✅ Recommended (modern + safer)   |
+
+---
+
+If you want, I can also explain:
+🔹 `const` vs `let`
+🔹 Mutable vs immutable variables
+🔹 Global vs local scope
+
+Just tell me 👍 -->

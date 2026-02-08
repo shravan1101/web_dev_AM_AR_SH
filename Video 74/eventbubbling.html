@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Bubbling</title>
+    <style>
+      .child {
+        background-color: aliceblue;
+        border: 2px solid black;
+        padding: 34px;
+        margin: 34px;
+      }
+      .childcont {
+        background-color: rgb(220, 25, 25);
+      }
+      .cont {
+        background-color: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="child">
+      <div class="childcont">
+        k
+        <div class="cont">i am a child</div>
+      </div>
+    </div>
+
+    <script>
+      function getRandomColor() {
+        let val1 = Math.floor(Math.random() * 256);
+        let val2 = Math.floor(Math.random() * 256);
+        let val3 = Math.floor(Math.random() * 256);
+        return `rgb(${val1}, ${val2}, ${val3})`;
+      }
+
+      // Remove stopPropagation() if you want true bubbling
+      document.querySelector(".child").addEventListener("click", () => {
+        alert("child was clicked");
+      });
+
+      document.querySelector(".childcont").addEventListener("click", () => {
+        alert("childContainer was clicked");
+      });
+
+      document.querySelector(".cont").addEventListener("click", () => {
+        alert("cont was clicked");
+      });
+
+      let a = setInterval(() => {
+        document.querySelector(".child").style.background = getRandomColor();
+      }, 1000);
+
+      console.log(a);
+    </script>
+  </body>
+</html>
