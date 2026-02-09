@@ -171,10 +171,17 @@ button {
 
 .playbar {
   position: absolute;
-  width: 98%;
-  bottom: 0px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: rgb(8, 8, 8);
-  padding: 12px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* // playbtn next-btn and pre-btn  */
@@ -251,11 +258,7 @@ button {
 .all-play-btn:active {
   transform: scale(0.96);
 }
-.playbar {
-  display: flex;
-  justify-content: center;
-  width: 96%;
-}
+
 .all-play-btn svg {
   width: 28px; /* increase this */
   height: 28px; /* increase this */
@@ -419,10 +422,26 @@ button {
   filter: invert(1);
   opacity: 0.9;
 }
+/* Red seek bar just below the controls */
 .seekbar {
-  height: 3px;
+  position: relative;
+  height: 6px;
   width: 100%;
-  border: 2px solid red;
-  position: sticky;
-  bottom: 0px;
+  max-width: 520px;
+  background: #e5c5c5;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.seekbar .circle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  background: #d23333;
+  border: 2px solid #094e70;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 6px rgba(255, 49, 49, 0.4);
 }
