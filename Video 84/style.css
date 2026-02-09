@@ -174,14 +174,31 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgb(8, 8, 8);
-  padding: 14px 18px;
+  background-color: #0e0e0e;
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  align-items: center;
+  gap: 14px;
+  align-items: stretch;
   width: 100%;
   box-sizing: border-box;
+}
+
+.main-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.songinfo {
+  flex: 1;
+  max-width: 340px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+  white-space: normal;
+  word-break: break-word;
 }
 
 /* // playbtn next-btn and pre-btn  */
@@ -191,6 +208,8 @@ button {
   display: flex;
   align-items: center;
   gap: 18px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Previous & Next */
@@ -243,11 +262,10 @@ button {
     box-shadow 0.15s ease;
 }
 
-.all-play-btn svg {
+.all-play-btn img {
   width: 44px;
-  height: 44spx;
-  fill: #0e0d0d;
-  margin-left: 2px; /* optical centering */
+  height: 44px;
+  object-fit: contain;
 }
 
 .all-play-btn:hover {
@@ -259,9 +277,23 @@ button {
   transform: scale(0.96);
 }
 
-.all-play-btn svg {
+.all-play-btn img {
   width: 28px; /* increase this */
   height: 28px; /* increase this */
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.songtime {
+  min-width: 110px;
+  text-align: right;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 /* play list play button  */
@@ -423,12 +455,13 @@ button {
   opacity: 0.9;
 }
 /* Red seek bar just below the controls */
+/* Seek bar row */
 .seekbar {
   position: relative;
   height: 6px;
   width: 100%;
   max-width: 520px;
-  background: #e5c5c5;
+  background: linear-gradient(90deg, #f0cfcf 0%, #f8dede 100%);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -439,9 +472,15 @@ button {
   left: 0;
   width: 14px;
   height: 14px;
-  background: #d23333;
-  border: 2px solid #094e70;
+  background: #1db954;
+  border: 2px solid #0f0f0f;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 6px rgba(255, 49, 49, 0.4);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+  transition: left 0.15s ease;
+}
+
+.main-bar {
+  display: flex;
+  justify-content: space-between;
 }
