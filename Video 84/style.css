@@ -171,11 +171,34 @@ button {
 
 .playbar {
   position: absolute;
-  border: 2px solid red;
-  width: 98%;
-  bottom: 0px;
-  background-color: rgb(8, 8, 8);
-  padding: 12px ;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #0e0e0e;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.main-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.songinfo {
+  flex: 1;
+  max-width: 340px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+  white-space: normal;
+  word-break: break-word;
 }
 
 /* // playbtn next-btn and pre-btn  */
@@ -185,6 +208,8 @@ button {
   display: flex;
   align-items: center;
   gap: 18px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Previous & Next */
@@ -202,7 +227,9 @@ button {
   width: 22px;
   height: 22px;
   fill: #b3b3b3;
-  transition: fill 0.2s ease, transform 0.2s ease;
+  transition:
+    fill 0.2s ease,
+    transform 0.2s ease;
 }
 
 .all-icon-btn:hover svg {
@@ -216,8 +243,8 @@ button {
 
 /* Play */
 .all-play-btn {
-  width: 48px;
-  height: 48px;
+  width: 88px;
+  height: 88px;
   background: #ffffff;
   border: none;
   border-radius: 50%;
@@ -227,14 +254,18 @@ button {
   align-items: center;
   justify-content: center;
 
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  max-width: 60px;
+  max-height: 60px;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-.all-play-btn svg {
-  width: 22px;
-  height: 22px;
-  fill: #000000;
-  margin-left: 2px; /* optical centering */
+.all-play-btn img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
 }
 
 .all-play-btn:hover {
@@ -244,4 +275,212 @@ button {
 
 .all-play-btn:active {
   transform: scale(0.96);
+}
+
+.all-play-btn img {
+  width: 28px; /* increase this */
+  height: 28px; /* increase this */
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.songtime {
+  min-width: 110px;
+  text-align: right;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* play list play button  */
+.svg-play-btn-wrapper {
+  display: inline-block;
+  line-height: 0;
+}
+
+.svg-play-btn {
+  width: 200px;
+  height: 200px;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+  display: block;
+}
+
+.svg-play-btn:hover {
+  transform: scale(1.1);
+  opacity: 0.9;
+}
+
+.svg-play-btn:active {
+  transform: scale(1.05);
+}
+
+.playnow img {
+  width: 40px;
+}
+
+.info {
+  display: flex;
+  gap: 5px;
+}
+/* // icon chande play and song name song ariurts  */
+.song-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* adjust spacing between icon and text */
+  padding: 12px 0px;
+  margin-bottom: 12px;
+  border: 1px solid white;
+  border-radius: 5px;
+  min-height: 90px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.text-container {
+  display: flex;
+  flex-direction: column;
+}
+.playnow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+}
+/* Library list tiles mimicking the reference: dark cards with icon/text left and Play Now CTA on the right. */
+
+.songlist {
+  height: 50vh;
+  margin: 12px 0px;
+  overflow-y: auto;
+}
+.songlist ul {
+  padding: 0 12px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.songlist ul li {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0;
+  padding: 14px 18px;
+  background: #1b1b1b;
+  border: 1px solid #2b2b2b;
+  border-radius: 10px;
+  min-height: 86px;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
+  transition:
+    transform 0.1s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.songlist ul li:hover {
+  transform: translateY(-2px);
+  background: #202020;
+  border-color: #3a3a3a;
+}
+
+.song-item {
+  color: #e9e9e9;
+}
+
+.song-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.song-icon {
+  width: 34px;
+  height: 34px;
+  opacity: 0.85;
+}
+
+.lib_heading {
+  padding: 0 12px;
+}
+
+.text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.song-name {
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-artist {
+  color: #b3b3b3;
+  font-size: 12px;
+  letter-spacing: 0.15px;
+}
+
+.playnow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f5f5f5;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+}
+
+.play-icon {
+  width: 32px;
+  height: 32px;
+  filter: invert(1);
+  opacity: 0.9;
+}
+/* Red seek bar just below the controls */
+/* Seek bar row */
+.seekbar {
+  position: relative;
+  height: 6px;
+  width: 100%;
+  max-width: 520px;
+  background: linear-gradient(90deg, #f0cfcf 0%, #f8dede 100%);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.seekbar .circle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  background: #1db954;
+  border: 2px solid #0f0f0f;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+  transition: left 0.15s ease;
+}
+
+.main-bar {
+  display: flex;
+  justify-content: space-between;
 }

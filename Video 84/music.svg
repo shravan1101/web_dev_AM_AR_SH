@@ -1,0 +1,10 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Base -->
+  <circle cx="128" cy="128" r="110" stroke="#FFFFFF" stroke-width="12" fill="#000000"/>
+  <!-- Subtle inner ring for finishing touch -->
+  <circle cx="128" cy="128" r="92" stroke="#2A2A2A" stroke-width="2" fill="none"/>
+
+  <!-- Note -->
+  <path d="M96 70V150C96 165 84 176 68 176C52 176 40 165 40 150C40 135 52 124 68 124C76 124 84 127 90 132V78L176 58V140C176 155 164 166 148 166C132 166 120 155 120 140C120 125 132 114 148 114C156 114 164 117 170 122V80L96 96V70Z"
+        fill="#FFFFFF"/>
+</svg>
