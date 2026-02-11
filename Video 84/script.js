@@ -22,9 +22,14 @@ async function getsong() {
 let currentAudio = null;
 let playBtnIcon = null;
 let songInfoEl = null;
-let songTimeEl = null;
+let currentTimeEl = null;
+let durationTimeEl = null;
 let seekBar = null;
 let seekCircle = null;
+let volumeSlider = null;
+let volumeIcon = null;
+let lastVolume = 1;
+let pendingMute = false; // lets us remember intent even before audio exists
 
 const formatTitle = (track) =>
   track
@@ -46,10 +51,13 @@ const formatTime = (sec) => {
 const playMusic = (track, { autoplay = true } = {}) => {
   currentAudio?.pause();
   currentAudio = new Audio(`song/${encodeURIComponent(track)}`);
+  currentAudio.volume = pendingMute ? 0 : lastVolume;
+  currentAudio.muted = pendingMute;
 
   // Update UI when metadata is ready
   currentAudio.addEventListener("loadedmetadata", () => {
-    songTimeEl.textContent = `${formatTime(0)} / ${formatTime(currentAudio.duration)}`;
+    if (durationTimeEl) durationTimeEl.textContent = formatTime(currentAudio.duration);
+    if (currentTimeEl) currentTimeEl.textContent = formatTime(0);
     seekCircle.style.left = "0%";
   });
 
@@ -60,12 +68,14 @@ const playMusic = (track, { autoplay = true } = {}) => {
         ? (currentAudio.currentTime / currentAudio.duration) * 100
         : 0;
     seekCircle.style.left = `${pct}%`;
-    songTimeEl.textContent = `${formatTime(currentAudio.currentTime)} / ${formatTime(currentAudio.duration)}`;
+    if (currentTimeEl) currentTimeEl.textContent = formatTime(currentAudio.currentTime);
+    if (durationTimeEl) durationTimeEl.textContent = formatTime(currentAudio.duration);
   });
 
   // Reset icon at end
   currentAudio.addEventListener("ended", () => {
     if (playBtnIcon) playBtnIcon.src = "play.svg";
+    if (currentTimeEl && durationTimeEl) currentTimeEl.textContent = durationTimeEl.textContent;
   });
 
   if (autoplay) {
@@ -78,7 +88,8 @@ const playMusic = (track, { autoplay = true } = {}) => {
   // Show nicely formatted title (strip .mp3)
   const prettyName = formatTitle(track);
   if (songInfoEl) songInfoEl.textContent = prettyName;
-  if (songTimeEl) songTimeEl.textContent = "00:00 / 00:00";
+  if (currentTimeEl) currentTimeEl.textContent = "00:00";
+  if (durationTimeEl) durationTimeEl.textContent = "00:00";
 };
 
 async function main() {
@@ -88,9 +99,12 @@ async function main() {
 
   // cache UI hooks
   songInfoEl = document.querySelector(".songinfo");
-  songTimeEl = document.querySelector(".songtime");
+  currentTimeEl = document.querySelector(".current-time");
+  durationTimeEl = document.querySelector(".duration-time");
   seekBar = document.querySelector(".seekbar");
   seekCircle = seekBar.querySelector(".circle");
+  volumeSlider = document.querySelector(".volume-slider");
+  volumeIcon = document.querySelector(".volume-icon");
 
   songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0];
   songUL.innerHTML = "";
@@ -128,6 +142,10 @@ async function main() {
     playMusic(songs[0], { autoplay: false });
   }
 
+  // sync initial volume UI
+  if (volumeSlider) volumeSlider.value = lastVolume;
+  if (volumeIcon) volumeIcon.classList.toggle("muted", pendingMute || lastVolume === 0);
+
   // attach a event listener to play/pause main button
   const playBtn = document.querySelector(".all-play-btn");
   playBtnIcon = playBtn?.querySelector("img");
@@ -153,6 +171,54 @@ async function main() {
     const rect = seekBar.getBoundingClientRect();
     const pct = (e.clientX - rect.left) / rect.width;
     currentAudio.currentTime = currentAudio.duration * pct;
+  });
+
+  // volume slider control
+  volumeSlider?.addEventListener("input", (e) => {
+    const vol = Math.min(1, Math.max(0, parseFloat(e.target.value)));
+    lastVolume = vol;
+    pendingMute = vol === 0;
+    if (currentAudio) {
+      currentAudio.muted = false;
+      currentAudio.volume = vol;
+    }
+    volumeIcon?.classList.toggle("muted", vol === 0);
+  });
+
+  // click / keyboard to mute-unmute
+  const toggleMute = () => {
+    const noPlayer = !currentAudio;
+    const isMuted = noPlayer ? pendingMute || lastVolume === 0 : currentAudio.muted || currentAudio.volume === 0;
+
+    if (isMuted) {
+      // unmute
+      const restore = lastVolume > 0 ? lastVolume : 0.5;
+      pendingMute = false;
+      if (!noPlayer) {
+        currentAudio.muted = false;
+        currentAudio.volume = restore;
+      }
+      if (volumeSlider) volumeSlider.value = restore;
+      volumeIcon?.classList.toggle("muted", restore === 0);
+    } else {
+      // mute
+      if (!noPlayer) {
+        lastVolume = currentAudio.volume || 0.5;
+        currentAudio.muted = true;
+        currentAudio.volume = 0;
+      }
+      pendingMute = true;
+      if (volumeSlider) volumeSlider.value = 0;
+      volumeIcon?.classList.add("muted");
+    }
+  };
+
+  volumeIcon?.addEventListener("click", toggleMute);
+  volumeIcon?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      toggleMute();
+    }
   });
 
   document.querySelector(".hamburger").addEventListener("click", () => {
