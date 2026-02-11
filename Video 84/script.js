@@ -1,4 +1,5 @@
 // Fetch the directory listing and collect mp3 filenames.
+let songUL;
 async function getsong() {
   // Use a relative path so it works regardless of the local server port.
   let response = await fetch("song/");
@@ -91,9 +92,7 @@ async function main() {
   seekBar = document.querySelector(".seekbar");
   seekCircle = seekBar.querySelector(".circle");
 
-  let songUL = document
-    .querySelector(".songlist")
-    .getElementsByTagName("ul")[0];
+  songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0];
   songUL.innerHTML = "";
 
   // Build each row to match the reference layout: icon + song text on the left, Play Now CTA on the right.
@@ -154,6 +153,61 @@ async function main() {
     const rect = seekBar.getBoundingClientRect();
     const pct = (e.clientX - rect.left) / rect.width;
     currentAudio.currentTime = currentAudio.duration * pct;
+  });
+
+  document.querySelector(".hamburger").addEventListener("click", () => {
+    document.querySelector(".left").style.left = "0";
+  });
+
+  document.querySelector(".cross").addEventListener("click", () => {
+    document.querySelector(".left").style.left = "-130%";
+  });
+
+  // Function to get the index of the currently playing song
+  const getCurrentSongIndex = () => {
+    // If no song is playing, return -1
+    if (!currentAudio) {
+      return -1;
+    }
+
+    // Get the file name from the audio source URL
+    const fullPath = currentAudio.src;
+    const fileName = decodeURIComponent(fullPath.split("/").pop());
+
+    // Return the index of this file name inside the songs array
+    return songs.indexOf(fileName);
+  };
+
+  // When Previous button is clicked
+  previous.addEventListener("click", () => {
+    const currentIndex = getCurrentSongIndex();
+
+    // If no valid song found, stop
+    if (currentIndex === -1) return;
+
+    let newIndex;
+
+    // If current song is first one, go to last song
+    if (currentIndex === 0) {
+      newIndex = songs.length - 1;
+    } else {
+      newIndex = currentIndex - 1;
+    }
+
+    playMusic(songs[newIndex]);
+  });
+
+  // When Next button is clicked
+  next.addEventListener("click", () => {
+    const currentIndex = getCurrentSongIndex();
+
+    // If no valid song found, stop
+    if (currentIndex === -1) return;
+
+    // Move to next song (loops back to start automatically)
+    const newIndex = (currentIndex + 1) % songs.length;
+
+    playMusic(songs[newIndex]);
   });
 }
 
