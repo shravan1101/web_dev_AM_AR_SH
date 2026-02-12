@@ -1,4 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+:root {
+  --a: 0;
+}
 
 * {
   margin: 0;
@@ -93,11 +96,14 @@ body {
   padding: 10px;
   border-radius: 5px;
   background-color: #252525;
+  min-height: 330px;
+  display: flex;
+  flex-direction: column;
 }
 .card img {
   width: 100%;
-  object-fit: contain;
-  /* very improtant  */
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
 }
 .card > * {
   padding-top: 12 px;
@@ -114,6 +120,12 @@ body {
 }
 .card {
   position: relative;
+  transition: all 0.5s;
+}
+.card:hover {
+  background-color: black;
+  cursor: pointer;
+  --a: 1;
 }
 .play {
   position: absolute;
@@ -121,6 +133,16 @@ body {
   right: 5px;
   transition: all 1s ease-out;
   opacity: 0;
+}
+
+.play svg {
+  opacity: 0;
+  transition: 0.4;
+}
+
+.play svg:hover {
+  opacity: 1;
+  transition: all 0.2s ease-in-out;
 }
 .toggle {
   top: 149px;
@@ -189,18 +211,23 @@ button {
 .main-bar {
   display: flex;
   align-items: center;
+  justify-content: space-evenly;
   gap: 20px;
   width: 100%;
 }
 
 .songinfo {
-  flex: 1;
-  max-width: 340px;
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.35;
-  white-space: normal;
-  word-break: break-word;
+  flex: 2;
+  max-width: 60%;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  line-height: 1.2;
+  color: #fafafa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
 }
 
 /* // playbtn next-btn and pre-btn  */
@@ -210,8 +237,6 @@ button {
   display: flex;
   align-items: center;
   gap: 18px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 /* Previous & Next */
@@ -493,7 +518,7 @@ button {
   display: none;
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1000px) {
   .left {
     /* background-color: red; */
     position: absolute;
@@ -529,11 +554,12 @@ button {
   width: 30px;
   height: 30px;
 }
-
-.volume-container {
+/* Volume + time cluster on the right of the progress row */
+.volume {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  margin-left: auto;
 }
 
 .volume-icon {
@@ -544,6 +570,12 @@ button {
   width: 42px;
   height: 42px;
   border-radius: 50%;
+  border: none;
+  background: #1b1b1b;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0;
   cursor: pointer;
   transition:
     background 0.2s ease,
@@ -554,11 +586,18 @@ button {
 .volume-icon img {
   width: 22px;
   height: 22px;
+  filter: invert(1);
+  opacity: 0.9;
 }
 
 .volume-icon:hover {
   background: rgba(255, 255, 255, 0.08);
   transform: scale(1.04);
+}
+
+.volume-icon:focus-visible {
+  outline: 2px solid var(--spotify-green);
+  outline-offset: 3px;
 }
 
 .volume-icon.muted {
@@ -580,7 +619,7 @@ button {
   width: 130px;
   height: 6px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #ffffff 0%, #d0d0d0 100%);
+  background: linear-gradient(90deg, #9be190 0%, #d0d0d0 100%);
   outline: none;
   cursor: pointer;
   transition: opacity 0.2s ease;
@@ -602,4 +641,14 @@ button {
   border-radius: 50%;
   background: #ffffff;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.35);
+}
+
+.songtime {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f1f1f1;
+  min-width: 110px;
 }

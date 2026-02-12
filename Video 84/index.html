@@ -144,7 +144,7 @@
           <h1>Spotify Playlist</h1>
 
           <div class="cardcontainer">
-            <div class="card">
+            <div data-folder="NCS" class="card">
               <div class="play toggle">
                 <svg
                   width="56"
@@ -169,7 +169,7 @@
               </p>
             </div>
 
-            <div class="card">
+            <div data-folder="CS" class="card">
               <div class="play toggle">
                 <svg
                   width="56"
@@ -235,8 +235,25 @@
               </div>
 
               <div class="volume">
-                <img src="volume.svg" class="invert" alt="" />
-                <div class="songtime"></div>
+                <button class="volume-icon" aria-label="Mute or unmute">
+                  <img src="volume.svg" alt="Volume" />
+                </button>
+
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value="1"
+                  aria-label="Adjust volume"
+                  class="volume-slider"
+                />
+
+                <div class="songtime" aria-live="polite">
+                  <span class="current-time">00:00</span>
+                  <span aria-hidden="true">/</span>
+                  <span class="duration-time">00:00</span>
+                </div>
               </div>
             </div>
           </div>
