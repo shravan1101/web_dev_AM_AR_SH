@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Website : FREE API</title>
+    <script src="weather.js" defer></script>
+    <style>
+       body{
+
+         background-image: url('weather.jpg');
+         background-repeat: no-repeat;
+    
+         background-size: cover;
+       }
+       
+       input{
+         width: 300px;
+         height: 30px;
+        }
+        .app{
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+        .search{
+          background-color: #9dff00;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          width: 350px;
+          height: 110px;
+          align-items: center;
+          justify-content: center;
+          border-radius: 5px;
+        }
+        #btn1{
+          position: relative;
+          top: 7px;
+          width: 120px;
+          border-radius: 5px;
+          color: white;
+          background-color: black;
+          font-weight: 300;
+          text-shadow: none;
+          box-shadow: none;
+        }
+        label{
+          position: relative;
+          bottom: 8px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+        .error{
+          color: white;
+          font-size: 20px;
+          font-weight: 600;
+          position: relative;
+          top: 8px;
+          
+          justify-content: center;
+          align-items: center;
+          background-color: #ff3406;
+          width: 150px;
+          height: 40px;
+          text-align: center;
+          border-radius: 8px;
+          display: none;
+        }
+        .weather{
+          position: relative;
+          bottom: 7px;
+          border-radius: 7px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          font-size: 20px;
+          font-weight: 600;
+          background-color: #9dff00;
+         height: 150px;
+          width: 350px;
+          display: none; 
+          
+        }
+        
+        </style>
+</head>
+<body>
+    <div class="app">
+
+        <div class="search">
+            <label for="enter">Enter The Location</label>
+          
+            <input type="text" name="Location name" placeholder="Eg: Panjim" spellcheck="false" id="enter">
+            <button type="button" id="btn1">Check</button>
+        </div>
+        <div class="error">
+            <p>Invalid query</p>
+        </div>
+        <div class="weather">
+            <div class="c">City:</div>
+            <div class="t">Temperature:</div>
+            <div class="ws">Wind speed:</div>
+        </div>
+    </div>
+</body>
+</html>
