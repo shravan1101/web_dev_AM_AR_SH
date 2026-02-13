@@ -1,101 +1,148 @@
-// Fetch the directory listing and collect mp3 filenames.
+// --- Config ---
+// Point this to whichever subfolder under /song you want to load on page start.
+const defaultFolder = "song/CS";
+
+// --- State ---
+let activeFolder = defaultFolder;
+let songs = [];
+let currentAudio = null;
+let lastVolume = 1;
+let pendingMute = false; // remember mute intent before audio exists
+
+// --- DOM refs (set in main) ---
 let songUL;
-async function getsong() {
-  // Use a relative path so it works regardless of the local server port.
-  let response = await fetch("song/");
-  let data = await response.text();
-  let div = document.createElement("div");
-  div.innerHTML = data;
-  let a = div.getElementsByTagName("a");
-  let songs = [];
-  for (let i = 0; i < a.length; i++) {
-    const element = a[i];
-    if (element.href.endsWith(".mp3")) {
-      // Store decoded names once to avoid double-encoding later.
-      songs.push(decodeURIComponent(element.href.split("/song/")[1]));
+let songInfoEl;
+let currentTimeEl;
+let durationTimeEl;
+let seekBar;
+let seekCircle;
+let volumeSlider;
+let volumeIcon;
+let playBtnIcon;
+
+// --- DOM helpers ---
+const qs = (sel) => document.querySelector(sel);
+const qsa = (sel) => Array.from(document.querySelectorAll(sel));
+
+const cacheDom = () => {
+  songInfoEl = qs(".songinfo");
+  currentTimeEl = qs(".current-time");
+  durationTimeEl = qs(".duration-time");
+  seekBar = qs(".seekbar");
+  seekCircle = seekBar?.querySelector(".circle");
+  volumeSlider = qs(".volume-slider");
+  volumeIcon = qs(".volume-icon");
+  songUL = qs(".songlist ul");
+  playBtnIcon = qs(".all-play-btn img");
+};
+
+// --- Data helpers ---
+const fetchSongs = async (folderPath = defaultFolder) => {
+  activeFolder = folderPath.replace(/\/$/, ""); // strip trailing slash
+
+  const response = await fetch(`${activeFolder}/`);
+  const html = await response.text();
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  const links = div.getElementsByTagName("a");
+
+  const list = [];
+  for (let i = 0; i < links.length; i++) {
+    const href = links[i].href;
+    if (href.endsWith(".mp3")) {
+      const parts = decodeURIComponent(href).split(`${activeFolder}/`);
+      list.push(parts.pop());
     }
   }
-  return songs;
-}
-
-// Keep a single audio instance so multiple clicks don't overlap.
-let currentAudio = null;
-let playBtnIcon = null;
-let songInfoEl = null;
-let songTimeEl = null;
-let seekBar = null;
-let seekCircle = null;
-
-const formatTitle = (track) =>
-  track
-    .replace(/\.mp3$/i, "")
-    .replace(/_/g, " ")
-    .trim();
-
-const formatTime = (sec) => {
-  if (!isFinite(sec)) return "00:00";
-  const m = Math.floor(sec / 60)
-    .toString()
-    .padStart(2, "0");
-  const s = Math.floor(sec % 60)
-    .toString()
-    .padStart(2, "0");
-  return `${m}:${s}`;
+  return list;
 };
 
-const playMusic = (track, { autoplay = true } = {}) => {
-  currentAudio?.pause();
-  currentAudio = new Audio(`song/${encodeURIComponent(track)}`);
+const safeInfo = (data = {}, folder) => ({
+  title: data.title || data.tittle || folder,
+  description: data.description || data.descriptions || data.descriptons || "Playlist",
+});
 
-  // Update UI when metadata is ready
-  currentAudio.addEventListener("loadedmetadata", () => {
-    songTimeEl.textContent = `${formatTime(0)} / ${formatTime(currentAudio.duration)}`;
-    seekCircle.style.left = "0%";
-  });
+const displayAlbums = async () => {
+  const container = qs(".cardcontainer");
+  if (!container) return;
 
-  // Progress + time updates
-  currentAudio.addEventListener("timeupdate", () => {
-    const pct =
-      currentAudio.duration > 0
-        ? (currentAudio.currentTime / currentAudio.duration) * 100
-        : 0;
-    seekCircle.style.left = `${pct}%`;
-    songTimeEl.textContent = `${formatTime(currentAudio.currentTime)} / ${formatTime(currentAudio.duration)}`;
-  });
+  const base = "song";
 
-  // Reset icon at end
-  currentAudio.addEventListener("ended", () => {
-    if (playBtnIcon) playBtnIcon.src = "play.svg";
-  });
-
-  if (autoplay) {
-    currentAudio.play();
-    if (playBtnIcon) playBtnIcon.src = "pause.svg";
-  } else {
-    if (playBtnIcon) playBtnIcon.src = "play.svg";
+  // Try to discover subfolders by parsing the directory listing.
+  let folderNames = [];
+  try {
+    const res = await fetch(`${base}/`);
+    const html = await res.text();
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    folderNames = Array.from(div.getElementsByTagName("a"))
+      .map((a) => a.getAttribute("href") || "")
+      .filter((href) => href && !href.includes("../")) // skip parent/up links
+      .map((href) => href.replace(/\\/g, "/"))
+      .map((href) => href.replace(/\/$/, "")) // drop trailing slash if any
+      .filter((href) => !href.toLowerCase().endsWith(".mp3")) // ignore files
+      .map((href) => decodeURIComponent(href.split("/").filter(Boolean).pop()))
+      .filter(
+        (name) =>
+          name &&
+          name !== "song" &&
+          name.toLowerCase() !== "video 84" &&
+          name.toLowerCase() !== "video%2084",
+      );
+  } catch (err) {
+    console.warn("Could not list song folders", err);
   }
 
-  // Show nicely formatted title (strip .mp3)
-  const prettyName = formatTitle(track);
-  if (songInfoEl) songInfoEl.textContent = prettyName;
-  if (songTimeEl) songTimeEl.textContent = "00:00 / 00:00";
+  // Fallback: if listing failed, try these known folders.
+  if (!folderNames.length) {
+    folderNames = ["CS", "NCS", "test1", defaultFolder.split("/").pop()].filter(Boolean);
+  }
+
+  // drop any falsy or 'undefined' entries that may sneak in
+  folderNames = folderNames.filter((name) => name && name.toLowerCase() !== "undefined");
+
+  // ensure we only render one card per folder
+  folderNames = [...new Set(folderNames)];
+
+  // clear existing cards and rebuild from folders
+  container.innerHTML = "";
+
+  for (const folder of folderNames) {
+    let meta = {};
+    try {
+      const infoRes = await fetch(`${base}/${folder}/info.json`);
+      if (infoRes.ok) meta = await infoRes.json();
+    } catch (err) {
+      console.warn("info.json missing for", folder);
+    }
+    const { title, description } = safeInfo(meta, folder);
+    const coverSrc = `${base}/${folder}/cover.jpeg`;
+
+    container.insertAdjacentHTML(
+      "beforeend",
+      `
+      <div data-folder="${folder}" class="card">
+        <div class="play toggle">
+          <svg width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="28" cy="28" r="22" fill="#1DB954" />
+            <path d="M23 17 L23 39 L39 28 Z" fill="#000000" />
+          </svg>
+        </div>
+
+        <img src="${coverSrc}" alt="${title}" />
+
+        <h2>${title}</h2>
+        <p style="font-size: 16px">${description}</p>
+      </div>
+      `,
+    );
+  }
 };
 
-async function main() {
-  // get this list of all the songs
-  let songs = await getsong();
-  console.log(songs);
-
-  // cache UI hooks
-  songInfoEl = document.querySelector(".songinfo");
-  songTimeEl = document.querySelector(".songtime");
-  seekBar = document.querySelector(".seekbar");
-  seekCircle = seekBar.querySelector(".circle");
-
-  songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0];
+const renderSongs = (list) => {
+  songs = list;
   songUL.innerHTML = "";
 
-  // Build each row to match the reference layout: icon + song text on the left, Play Now CTA on the right.
   for (const song of songs) {
     songUL.innerHTML += `<li class="song-item" data-file="${song}">
       <div class="song-meta">
@@ -113,31 +160,96 @@ async function main() {
     </li>`;
   }
 
-  Array.from(
-    document.querySelector(".songlist").getElementsByTagName("li"),
-  ).forEach((e) => {
-    e.addEventListener("click", (element) => {
-      const file = e.dataset.file;
-      console.log(file);
-      playMusic(file);
-    });
+  Array.from(songUL.getElementsByTagName("li")).forEach((row) => {
+    row.addEventListener("click", () => playMusic(row.dataset.file));
+  });
+};
+
+// --- Formatters ---
+const formatTitle = (track) =>
+  track
+    .replace(/\.mp3$/i, "")
+    .replace(/_/g, " ")
+    .trim();
+
+const formatTime = (sec) => {
+  if (!isFinite(sec)) return "00:00";
+  const m = Math.floor(sec / 60)
+    .toString()
+    .padStart(2, "0");
+  const s = Math.floor(sec % 60)
+    .toString()
+    .padStart(2, "0");
+  return `${m}:${s}`;
+};
+
+// --- Playback ---
+const playMusic = (track, { autoplay = true } = {}) => {
+  currentAudio?.pause();
+  currentAudio = new Audio(`${activeFolder}/${encodeURIComponent(track)}`);
+  currentAudio.volume = pendingMute ? 0 : lastVolume;
+  currentAudio.muted = pendingMute;
+
+  currentAudio.addEventListener("loadedmetadata", () => {
+    durationTimeEl.textContent = formatTime(currentAudio.duration);
+    currentTimeEl.textContent = "00:00";
+    seekCircle.style.left = "0%";
   });
 
-  // Preload first song info (no autoplay) so UI isn't empty on refresh
-  if (songs.length) {
-    playMusic(songs[0], { autoplay: false });
+  currentAudio.addEventListener("timeupdate", () => {
+    const pct =
+      currentAudio.duration > 0
+        ? (currentAudio.currentTime / currentAudio.duration) * 100
+        : 0;
+    seekCircle.style.left = `${pct}%`;
+    currentTimeEl.textContent = formatTime(currentAudio.currentTime);
+    durationTimeEl.textContent = formatTime(currentAudio.duration);
+  });
+
+  currentAudio.addEventListener("ended", () => {
+    if (playBtnIcon) playBtnIcon.src = "play.svg";
+    currentTimeEl.textContent = durationTimeEl.textContent;
+  });
+
+  if (autoplay) {
+    currentAudio.play();
+    if (playBtnIcon) playBtnIcon.src = "pause.svg";
+  } else if (playBtnIcon) {
+    playBtnIcon.src = "play.svg";
   }
 
-  // attach a event listener to play/pause main button
-  const playBtn = document.querySelector(".all-play-btn");
-  playBtnIcon = playBtn?.querySelector("img");
+  const prettyName = formatTitle(track);
+  songInfoEl.textContent = prettyName;
+  currentTimeEl.textContent = "00:00";
+  durationTimeEl.textContent = "00:00";
+};
+
+const getCurrentSongIndex = () => {
+  if (!currentAudio) return -1;
+  const fileName = decodeURIComponent(currentAudio.src.split("/").pop());
+  return songs.indexOf(fileName);
+};
+
+// --- UI bindings ---
+const bindPlaylistCards = () => {
+  qsa(".card").forEach((card) => {
+    card.addEventListener("click", async () => {
+      const folderName = card.dataset.folder;
+      const list = await fetchSongs(`song/${folderName}`);
+      renderSongs(list);
+      // do not autoplay; just load list and wait for user to click a track
+    });
+  });
+};
+
+const bindTransportControls = () => {
+  const playBtn = qs(".all-play-btn");
+
   playBtn?.addEventListener("click", () => {
-    // If no track has been started yet, start with the first one
     if (!currentAudio) {
-      playMusic(songs[0]);
+      if (songs.length) playMusic(songs[0]);
       return;
     }
-
     if (currentAudio.paused) {
       currentAudio.play();
       if (playBtnIcon) playBtnIcon.src = "pause.svg";
@@ -147,7 +259,23 @@ async function main() {
     }
   });
 
-  // allow clicking the bar to seek
+  const previous = qs("#previous");
+  const next = qs("#next");
+
+  previous?.addEventListener("click", () => {
+    const idx = getCurrentSongIndex();
+    if (idx === -1) return;
+    const newIndex = idx === 0 ? songs.length - 1 : idx - 1;
+    playMusic(songs[newIndex]);
+  });
+
+  next?.addEventListener("click", () => {
+    const idx = getCurrentSongIndex();
+    if (idx === -1) return;
+    const newIndex = (idx + 1) % songs.length;
+    playMusic(songs[newIndex]);
+  });
+
   seekBar?.addEventListener("click", (e) => {
     if (!currentAudio || !isFinite(currentAudio.duration)) return;
     const rect = seekBar.getBoundingClientRect();
@@ -155,60 +283,70 @@ async function main() {
     currentAudio.currentTime = currentAudio.duration * pct;
   });
 
-  document.querySelector(".hamburger").addEventListener("click", () => {
-    document.querySelector(".left").style.left = "0";
-  });
-
-  document.querySelector(".cross").addEventListener("click", () => {
-    document.querySelector(".left").style.left = "-130%";
-  });
-
-  // Function to get the index of the currently playing song
-  const getCurrentSongIndex = () => {
-    // If no song is playing, return -1
-    if (!currentAudio) {
-      return -1;
+  volumeSlider?.addEventListener("input", (e) => {
+    const vol = Math.min(1, Math.max(0, parseFloat(e.target.value)));
+    lastVolume = vol;
+    pendingMute = vol === 0;
+    if (currentAudio) {
+      currentAudio.muted = false;
+      currentAudio.volume = vol;
     }
+    volumeIcon?.classList.toggle("muted", vol === 0);
+  });
 
-    // Get the file name from the audio source URL
-    const fullPath = currentAudio.src;
-    const fileName = decodeURIComponent(fullPath.split("/").pop());
+  const toggleMute = () => {
+    const noPlayer = !currentAudio;
+    const isMuted = noPlayer
+      ? pendingMute || lastVolume === 0
+      : currentAudio.muted || currentAudio.volume === 0;
 
-    // Return the index of this file name inside the songs array
-    return songs.indexOf(fileName);
+    if (isMuted) {
+      const restore = lastVolume > 0 ? lastVolume : 0.5;
+      pendingMute = false;
+      if (!noPlayer) {
+        currentAudio.muted = false;
+        currentAudio.volume = restore;
+      }
+      if (volumeSlider) volumeSlider.value = restore;
+      volumeIcon?.classList.toggle("muted", restore === 0);
+    } else {
+      if (!noPlayer) {
+        lastVolume = currentAudio.volume || 0.5;
+        currentAudio.muted = true;
+        currentAudio.volume = 0;
+      }
+      pendingMute = true;
+      if (volumeSlider) volumeSlider.value = 0;
+      volumeIcon?.classList.add("muted");
+    }
   };
 
-  // When Previous button is clicked
-  previous.addEventListener("click", () => {
-    const currentIndex = getCurrentSongIndex();
-
-    // If no valid song found, stop
-    if (currentIndex === -1) return;
-
-    let newIndex;
-
-    // If current song is first one, go to last song
-    if (currentIndex === 0) {
-      newIndex = songs.length - 1;
-    } else {
-      newIndex = currentIndex - 1;
+  volumeIcon?.addEventListener("click", toggleMute);
+  volumeIcon?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      toggleMute();
     }
-
-    playMusic(songs[newIndex]);
   });
+};
 
-  // When Next button is clicked
-  next.addEventListener("click", () => {
-    const currentIndex = getCurrentSongIndex();
+// --- Init ---
+async function main() {
+  cacheDom();
 
-    // If no valid song found, stop
-    if (currentIndex === -1) return;
+  await displayAlbums();
+  bindTransportControls();
+  bindPlaylistCards();
 
-    // Move to next song (loops back to start automatically)
-    const newIndex = (currentIndex + 1) % songs.length;
+  const initialSongs = await fetchSongs(activeFolder);
+  renderSongs(initialSongs);
 
-    playMusic(songs[newIndex]);
-  });
+  if (songs.length) {
+    playMusic(songs[0], { autoplay: false }); // preload but don't auto-start
+  }
+
+  if (volumeSlider) volumeSlider.value = lastVolume;
+  volumeIcon?.classList.toggle("muted", pendingMute || lastVolume === 0);
 }
 
 main();
