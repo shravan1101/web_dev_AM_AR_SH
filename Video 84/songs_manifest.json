@@ -1,0 +1,41 @@
+{
+  "albums": {
+    "CS": {
+      "title": "CS",
+      "description": "Album",
+      "cover": "song/CS/cover.jpeg",
+      "folder": "CS",
+      "songs": []
+    },
+    "NCS": {
+      "title": "NCS",
+      "description": "Album",
+      "cover": "song/NCS/cover.jpeg",
+      "folder": "NCS",
+      "songs": [
+        "ACIDO III (Slowed)(MP3_320K) copy 2.mp3",
+        "Alan Walker - The Spectre(MP3_320K) copy 2.mp3",
+        "AVANGARD (Slowed   Reverb)(MP3_320K) copy 2.mp3",
+        "satirin - MATUSHKA ULTRAFUNK (SLOWED VERSION)(MP3_320K).mp3"
+      ]
+    },
+    "test1": {
+      "title": "test1",
+      "description": "Album",
+      "cover": "song/test1/cover.jpeg",
+      "folder": "test1",
+      "songs": []
+    },
+    "test2": {
+      "title": "My Mix",
+      "description": "chill beats",
+      "cover": "song/test2/cover.jpeg",
+      "folder": "test2",
+      "songs": [
+        "ACIDO III (Slowed)(MP3_320K) copy 2.mp3",
+        "Alan Walker - The Spectre(MP3_320K) copy 2.mp3",
+        "AVANGARD (Slowed   Reverb)(MP3_320K) copy 2.mp3"
+      ]
+    }
+  }
+}
