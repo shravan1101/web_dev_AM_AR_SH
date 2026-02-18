@@ -1,6 +1,6 @@
 // --- Config ---
 // Point this to whichever subfolder under /song you want to load on page start.
-const defaultFolder = "song/CS";
+const defaultFolder = "song/NCS";
 
 // --- State ---
 let activeFolder = defaultFolder;
@@ -37,104 +37,66 @@ const cacheDom = () => {
 };
 
 // --- Data helpers ---
-const fetchSongs = async (folderPath = defaultFolder) => {
-  activeFolder = folderPath.replace(/\/$/, ""); // strip trailing slash
+let songsManifest = null;
 
-  const response = await fetch(`${activeFolder}/`);
-  const html = await response.text();
-  const div = document.createElement("div");
-  div.innerHTML = html;
-  const links = div.getElementsByTagName("a");
-
-  const list = [];
-  for (let i = 0; i < links.length; i++) {
-    const href = links[i].href;
-    if (href.endsWith(".mp3")) {
-      const parts = decodeURIComponent(href).split(`${activeFolder}/`);
-      list.push(parts.pop());
-    }
+const loadManifest = async () => {
+  if (songsManifest) return songsManifest;
+  try {
+    const res = await fetch("songs_manifest.json");
+    if (!res.ok) throw new Error("Manifest not found");
+    songsManifest = await res.json();
+  } catch (err) {
+    console.error("Could not load manifest", err);
   }
-  return list;
+  return songsManifest;
 };
 
-const safeInfo = (data = {}, folder) => ({
-  title: data.title || data.tittle || folder,
-  description: data.description || data.descriptions || data.descriptons || "Playlist",
-});
+const fetchSongs = async (folderPath) => {
+  await loadManifest();
+  if (!songsManifest) return [];
+
+  // folderPath might be "song/CS" or just "CS"
+  // The manifest keys are just the folder names like "CS", "NCS"
+  const folderName = folderPath.split("/").pop();
+
+  const album = songsManifest.albums[folderName];
+  if (!album) return [];
+
+  return album.songs;
+};
 
 const displayAlbums = async () => {
   const container = qs(".cardcontainer");
   if (!container) return;
 
-  const base = "song";
+  await loadManifest();
+  if (!songsManifest) return;
 
-  // Try to discover subfolders by parsing the directory listing.
-  let folderNames = [];
-  try {
-    const res = await fetch(`${base}/`);
-    const html = await res.text();
-    const div = document.createElement("div");
-    div.innerHTML = html;
-    folderNames = Array.from(div.getElementsByTagName("a"))
-      .map((a) => a.getAttribute("href") || "")
-      .filter((href) => href && !href.includes("../")) // skip parent/up links
-      .map((href) => href.replace(/\\/g, "/"))
-      .map((href) => href.replace(/\/$/, "")) // drop trailing slash if any
-      .filter((href) => !href.toLowerCase().endsWith(".mp3")) // ignore files
-      .map((href) => decodeURIComponent(href.split("/").filter(Boolean).pop()))
-      .filter(
-        (name) =>
-          name &&
-          name !== "song" &&
-          name.toLowerCase() !== "video 84" &&
-          name.toLowerCase() !== "video%2084",
-      );
-  } catch (err) {
-    console.warn("Could not list song folders", err);
-  }
-
-  // Fallback: if listing failed, try these known folders.
-  if (!folderNames.length) {
-    folderNames = ["CS", "NCS", "test1", defaultFolder.split("/").pop()].filter(Boolean);
-  }
-
-  // drop any falsy or 'undefined' entries that may sneak in
-  folderNames = folderNames.filter((name) => name && name.toLowerCase() !== "undefined");
-
-  // ensure we only render one card per folder
-  folderNames = [...new Set(folderNames)];
-
-  // clear existing cards and rebuild from folders
+  const albums = songsManifest.albums;
   container.innerHTML = "";
 
-  for (const folder of folderNames) {
-    let meta = {};
-    try {
-      const infoRes = await fetch(`${base}/${folder}/info.json`);
-      if (infoRes.ok) meta = await infoRes.json();
-    } catch (err) {
-      console.warn("info.json missing for", folder);
-    }
-    const { title, description } = safeInfo(meta, folder);
-    const coverSrc = `${base}/${folder}/cover.jpeg`;
+  for (const [folder, data] of Object.entries(albums)) {
+    const title = data.title || folder;
+    const description = data.description || "Album";
+    const coverSrc = data.cover || "logo.svg"; // Fallback if no cover
 
     container.insertAdjacentHTML(
       "beforeend",
       `
-      <div data-folder="${folder}" class="card">
-        <div class="play toggle">
-          <svg width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="28" cy="28" r="22" fill="#1DB954" />
-            <path d="M23 17 L23 39 L39 28 Z" fill="#000000" />
-          </svg>
+        <div data-folder="${folder}" class="card">
+          <div class="play toggle">
+            <svg width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="28" cy="28" r="22" fill="#1DB954" />
+              <path d="M23 17 L23 39 L39 28 Z" fill="#000000" />
+            </svg>
+          </div>
+  
+          <img src="${coverSrc}" alt="${title}" />
+  
+          <h2>${title}</h2>
+          <p style="font-size: 16px">${description}</p>
         </div>
-
-        <img src="${coverSrc}" alt="${title}" />
-
-        <h2>${title}</h2>
-        <p style="font-size: 16px">${description}</p>
-      </div>
-      `,
+        `,
     );
   }
 };
@@ -235,7 +197,9 @@ const bindPlaylistCards = () => {
   qsa(".card").forEach((card) => {
     card.addEventListener("click", async () => {
       const folderName = card.dataset.folder;
-      const list = await fetchSongs(`song/${folderName}`);
+      // Update activeFolder so playMusic uses the correct path
+      activeFolder = `song/${folderName}`;
+      const list = await fetchSongs(activeFolder);
       renderSongs(list);
       // do not autoplay; just load list and wait for user to click a track
     });
