@@ -3,7 +3,7 @@ const fs = require("fs");
 // const fs_prormiss = require("fs/promises");
 
 // console.log("strat");
-// fs.writeFileSync("shravan.txt", "i am a good boy");
+// fs.writeFileSync("shravan.txt", "i am a good boy"); // it will block you main thread. 
 // console.log("ending");
 
 console.log("start");
