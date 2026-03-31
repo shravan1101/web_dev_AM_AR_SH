@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test ting post request</title>
+  </head>
+  <body>
+    <script>
+      async function testposy() {
+        let a = await fetch("/page.html", { method: "POST" });
+        let b = await a.text();
+
+        console.log(b);
+      }
+      testposy();
+    </script>
+  </body>
+</html>
