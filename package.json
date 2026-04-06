@@ -1,5 +1,24 @@
 {
   "dependencies": {
     "nodemon": "^3.1.14"
-  }
+  },
+  "name": "web_am_ar_sh",
+  "version": "1.0.0",
+  "description": "��",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shravan1101/web_dev_AM_AR_SH.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/shravan1101/web_dev_AM_AR_SH/issues"
+  },
+  "homepage": "https://github.com/shravan1101/web_dev_AM_AR_SH#readme"
 }
