@@ -20,5 +20,6 @@
   "bugs": {
     "url": "https://github.com/shravan1101/web_dev_AM_AR_SH/issues"
   },
-  "homepage": "https://github.com/shravan1101/web_dev_AM_AR_SH#readme"
+  "homepage": "https://github.com/shravan1101/web_dev_AM_AR_SH#readme",
+  "devDependencies": {}
 }
